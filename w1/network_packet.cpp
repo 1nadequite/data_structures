@@ -2,12 +2,12 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-#include <queue>
+#include <deque>
 #include <algorithm>
 #include <cmath>
 
 using namespace std;
-queue<int> finish_time;
+deque<int> finish_time;
 int s, n;
 
 int main() {
@@ -16,8 +16,8 @@ int main() {
     int a, p; cin >> a >> p;
 
     while (!finish_time.empty()) {
-      int time = finish_time.front();
-      if (time <= a) finish_time.pop();
+      int time = finish_time.push_back();
+      if (time <= a) finish_time.pop_front();
       else break;
     }
 
