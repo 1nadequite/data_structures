@@ -13,9 +13,9 @@ int n, m;
 template <typename T>
 class priority_queue {
   public:
-    priority_queue(size_t n) : max_size_(n), size_(0), data_(n) {
+    priority_queue(size_t n) : max_size_(n), size_(0), base_(0), data_(n) {
       for (int i = 0; i < n; ++i)
-        data_[i] = {inf, {0, 0}};
+        data_[i] = {inf, 0};
     }
 
     size_t parent(size_t i) { return (i - 1) / 2; }
@@ -23,7 +23,7 @@ class priority_queue {
     size_t right_child(size_t i) { return 2 * i + 2; }
     void sift_up(size_t);
     void sift_down(size_t);
-    void insert(T, size_t, size_t);
+    void insert(T, size_t);
     ll extract_min();
     void remove(size_t);
     size_t size() { return size_; }
@@ -33,7 +33,8 @@ class priority_queue {
   private:
     size_t max_size_;
     size_t size_;
-    vector<pair<T, pair<size_t, size_t>>> data_;
+    size_t base_;
+    vector<pair<T, size_t>> data_;
 };
 
 template <typename T>
@@ -59,12 +60,12 @@ void priority_queue<T>::sift_down(size_t i) {
 }
 
 template <typename T>
-void priority_queue<T>::insert(T time, size_t base, size_t val) {
+void priority_queue<T>::insert(T time, size_t val) {
   if (size_ == max_size_) {
     cout << "Error: priority_queue is full." << endl;
     return;
   }
-  data_[size_] = {time, {base, val}};
+  data_[size_] = {time, val};
   sift_up(size_);
   size_++;
 }
@@ -75,11 +76,12 @@ ll priority_queue<T>::extract_min() {
     cout << "Error: priprity_queue is empty." << endl;
     return -1;
   }
-  ll result = data_[0].second.second + data_[0].first;
-  cout << data_[0].second.first << ' ' << data_[0].first << endl;
-  data_[0] = data_[size_];
+  ll result = data_[0].second + data_[0].first;
+  cout << (base_ % n) << ' ' << data_[0].first << endl;
   size_--;
+  data_[0] = data_[size_];
   sift_down(0);
+  base_++;
   return result;
 }
 
@@ -89,7 +91,7 @@ void priority_queue<T>::remove(size_t i) {
     cout << "Error: priority_queue is empty." << endl;
     return;
   }
-  data_[i] = {0, {0, 0}};
+  data_[i] = {inf, 0};
   sift_up(i);
   extract_min();
 }
@@ -115,12 +117,10 @@ int main() {
   ll time = 0;
   for (int i = 0; i < m; ++i) {
     if (!q.full()) {
-      cout << "insert: " << time << ' ' << i % n << ' ' << a[i] << endl;
-      q.insert(time, i % n, a[i]);
+      q.insert(time, a[i]);
     } else {
       time = q.extract_min();
-      cout << "insert: " << time << ' ' << i % n << ' ' << a[i] << endl;
-      q.insert(time, i % n, a[i]);
+      q.insert(time, a[i]);
     }
   }
 
